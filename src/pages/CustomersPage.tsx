@@ -52,6 +52,36 @@ function CustomersPage() {
 
   const [form, setForm] = useState<Omit<Customer, 'id' | '_links'>>(emptyForm)
 
+  const escapeCsvValue = (value: unknown) => {
+    const text = value == null ? '' : String(value)
+    return `"${text.replaceAll('"', '""')}"`
+  }
+
+  const exportCustomersAsCsv = () => {
+    const headers = ['Etunimi', 'Sukunimi', 'Sähköposti', 'Puhelin', 'Osoite', 'Postinumero', 'Kaupunki']
+    const rows = filteredCustomers.map(customer =>
+      [
+        customer.firstname,
+        customer.lastname,
+        customer.email,
+        customer.phone,
+        customer.streetaddress,
+        customer.postcode,
+        customer.city,
+      ]
+        .map(escapeCsvValue)
+        .join(',')
+    )
+    const csv = [headers.map(escapeCsvValue).join(','), ...rows].join('\n')
+    const blob = new Blob(['\ufeff', csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'asiakkaat.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   const filteredCustomers = useMemo(() => {
     const withIds = customers.map(c => ({
       ...c,
@@ -150,6 +180,9 @@ function CustomersPage() {
         />
         <Button variant="contained" onClick={() => { setForm(emptyForm); setOpenAdd(true) }}>
           Lisää asiakas
+        </Button>
+        <Button variant="outlined" onClick={exportCustomersAsCsv}>
+          Lataa CSV
         </Button>
         <Button
           variant="outlined"
