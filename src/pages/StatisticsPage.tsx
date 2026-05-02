@@ -1,4 +1,4 @@
-import { Alert, Stack, Typography } from '@mui/material'
+import { Stack, Typography } from '@mui/material'
 
 function StatisticsPage() {
   return (

@@ -76,6 +76,23 @@ export async function createTraining(
   return handleResponse<Training>(response)
 }
 
+export async function updateTraining(
+  id: number,
+  training: Omit<Training, 'id'>,
+  customerId: number
+): Promise<Training> {
+  const payload = {
+    ...training,
+    customer: `${API_BASE_URL}/customers/${customerId}`,
+  }
+  const response = await fetch(`${API_BASE_URL}/trainings/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  return handleResponse<Training>(response)
+}
+
 export async function deleteTraining(id: number): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/trainings/${id}`, {
     method: 'DELETE',

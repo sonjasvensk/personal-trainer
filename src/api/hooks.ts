@@ -9,6 +9,7 @@ import {
   fetchTrainings,
   fetchTrainingsWithCustomers,
   updateCustomer,
+  updateTraining,
 } from './client'
 
 export function useCustomers() {
@@ -70,6 +71,25 @@ export function useCreateTraining() {
   return useMutation({
     mutationFn: ({ training, customerId }: { training: Omit<Training, 'id'>; customerId: number }) =>
       createTraining(training, customerId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['trainings'] })
+      queryClient.invalidateQueries({ queryKey: ['trainingsWithCustomers'] })
+    },
+  })
+}
+
+export function useUpdateTraining() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({
+      id,
+      training,
+      customerId,
+    }: {
+      id: number
+      training: Omit<Training, 'id'>
+      customerId: number
+    }) => updateTraining(id, training, customerId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['trainings'] })
       queryClient.invalidateQueries({ queryKey: ['trainingsWithCustomers'] })
