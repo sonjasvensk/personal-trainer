@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import {
   Box,
   Button,
+  IconButton,
   CircularProgress,
   Dialog,
   DialogActions,
@@ -12,6 +13,8 @@ import {
   Typography,
   Alert,
 } from '@mui/material'
+import EditIcon from '@mui/icons-material/Edit'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { DataGrid } from '@mui/x-data-grid'
 import type { GridColDef } from '@mui/x-data-grid'
 import type { Customer } from '../types'
@@ -29,7 +32,10 @@ function CustomersPage() {
   const updateCustomer = useUpdateCustomer()
   const deleteCustomer = useDeleteCustomer()
 
-  const [selectionModel, setSelectionModel] = useState<any>([])
+  const emptySelectionModel = { type: 'include' as const, ids: new Set<string>() }
+  const [selectionModel, setSelectionModel] = useState<{ type: 'include' | 'exclude'; ids: Set<string> }>(
+    emptySelectionModel
+  )
   const [openAdd, setOpenAdd] = useState(false)
   const [openEdit, setOpenEdit] = useState(false)
   const [openDelete, setOpenDelete] = useState(false)
@@ -71,8 +77,10 @@ function CustomersPage() {
       renderCell: params => {
         return (
           <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
+            <IconButton
               size="small"
+              color="primary"
+              aria-label="muokkaa"
               onClick={() => {
                 const row = params.row as Customer & { id?: string }
                 setForm({
@@ -84,23 +92,24 @@ function CustomersPage() {
                   postcode: row.postcode || '',
                   city: row.city || '',
                 })
-                setSelectionModel([String(row.id)])
+                setSelectionModel({ type: 'include', ids: new Set([String(row.id)]) })
                 setOpenEdit(true)
               }}
             >
-              Muokkaa
-            </Button>
-            <Button
+              <EditIcon fontSize="small" />
+            </IconButton>
+            <IconButton
               size="small"
               color="error"
+              aria-label="poista"
               onClick={() => {
                 const row = params.row as Customer & { id?: string }
-                setSelectionModel([String(row.id)])
+                setSelectionModel({ type: 'include', ids: new Set([String(row.id)]) })
                 setOpenDelete(true)
               }}
             >
-              Poista
-            </Button>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
           </Box>
         )
       },
@@ -145,12 +154,11 @@ function CustomersPage() {
         <Button
           variant="outlined"
           disabled={(() => {
-            const id = Array.isArray(selectionModel) ? selectionModel.length !== 1 : !(selectionModel && selectionModel.ids && selectionModel.ids.length === 1)
-            return id
+            const selectedIds = Array.from(selectionModel?.ids ?? [])
+            return selectedIds.length !== 1
           })()}
           onClick={() => {
-            const idRaw = Array.isArray(selectionModel) ? selectionModel[0] : selectionModel?.ids?.[0]
-            const id = String(idRaw)
+            const id = String(Array.from(selectionModel?.ids ?? [])[0])
             const row = filteredCustomers.find(r => String(r.id) === id)
             if (row) {
               setForm({
@@ -169,8 +177,8 @@ function CustomersPage() {
           Muokkaa valittua
         </Button>
         <Button variant="outlined" color="error" disabled={(() => {
-          const id = Array.isArray(selectionModel) ? selectionModel.length !== 1 : !(selectionModel && selectionModel.ids && selectionModel.ids.length === 1)
-          return id
+          const selectedIds = Array.from(selectionModel?.ids ?? [])
+          return selectedIds.length !== 1
         })()} onClick={() => setOpenDelete(true)}>
           Poista valittu
         </Button>
@@ -261,7 +269,7 @@ function CustomersPage() {
           <Button
             onClick={async () => {
               try {
-                const id = selectionModel[0]
+                const id = Array.from(selectionModel.ids ?? [])[0]
                 await updateCustomer.mutateAsync({ id: Number(id), customer: form })
                 setOpenEdit(false)
               } catch (e) {}
@@ -282,10 +290,10 @@ function CustomersPage() {
             color="error"
             onClick={async () => {
               try {
-                const id = selectionModel[0]
+                const id = Array.from(selectionModel.ids ?? [])[0]
                 await deleteCustomer.mutateAsync(Number(id))
                 setOpenDelete(false)
-                setSelectionModel([])
+                setSelectionModel(emptySelectionModel)
               } catch (e) {}
             }}
           >
