@@ -5,9 +5,6 @@ function HomePage() {
   return (
     <Stack spacing={3}>
       <Box>
-        <Typography variant="overline" sx={{ letterSpacing: 2, color: 'primary.main' }}>
-          Frontend-kurssin lopputyö
-        </Typography>
         <Typography variant="h3" component="h1" sx={{ fontWeight: 800, mb: 1 }}>
           Personal trainer-sovellus
         </Typography>
