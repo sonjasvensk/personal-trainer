@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { createBrowserRouter, createHashRouter, RouterProvider, Navigate } from 'react-router'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router'
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material'
 import App from './App'
 import HomePage from './pages/HomePage'
@@ -44,11 +44,7 @@ const routes = [
   },
 ]
 
-const isGithubPages =
-  typeof window !== 'undefined' &&
-  (window.location.hostname.includes('github.io') || window.location.pathname.includes('/personal-trainer/'))
-
-const router = isGithubPages ? createHashRouter(routes) : createBrowserRouter(routes)
+const router = createBrowserRouter(routes, { basename: '/personal-trainer/' })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
