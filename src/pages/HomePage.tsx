@@ -1,5 +1,5 @@
 import { Box, Card, CardContent, Stack, Typography } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import PeopleIcon from '@mui/icons-material/People'
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
