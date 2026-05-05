@@ -1,4 +1,4 @@
-import { Navigate, NavLink, Route, Routes } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 import {
   AppBar,
   Box,
@@ -9,11 +9,7 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material'
-import HomePage from './pages/HomePage'
-import CustomersPage from './pages/CustomersPage'
-import TrainingsPage from './pages/TrainingsPage'
-import CalendarPage from './pages/CalendarPage'
-import StatisticsPage from './pages/StatisticsPage'
+
 
 const navItems = [
   { label: 'Etusivu', to: '/' },
@@ -34,7 +30,17 @@ function App() {
     >
       <AppBar position="sticky" elevation={0} sx={{ backdropFilter: 'blur(16px)' }}>
         <Toolbar sx={{ gap: 2, flexWrap: 'wrap' }}>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 700 }}>
+          <Typography
+            variant="h6"
+            component={NavLink}
+            to="/"
+            sx={{
+              flexGrow: 1,
+              fontWeight: 700,
+              color: 'inherit',
+              textDecoration: 'none',
+            }}
+          >
             Personal Trainer
           </Typography>
           <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
@@ -67,14 +73,7 @@ function App() {
             backdropFilter: 'blur(18px)',
           }}
         >
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/customers" element={<CustomersPage />} />
-            <Route path="/trainings" element={<TrainingsPage />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/statistics" element={<StatisticsPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Outlet />
         </Paper>
       </Container>
     </Box>
