@@ -99,7 +99,7 @@ function TrainingsPage() {
   const rows = useMemo(() => {
     const mapped = trainings.map((training, index) => ({
       ...training,
-      id: training._links?.self?.href?.split('/').pop() ?? `${training.date}-${training.activity}-${index}`,
+      id: `${training._links?.self?.href ?? training.date}-${index}`,
     }))
 
     if (!searchTerm) return mapped
