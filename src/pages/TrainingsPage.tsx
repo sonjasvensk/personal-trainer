@@ -73,6 +73,8 @@ function TrainingsPage() {
     customerId: undefined as number | undefined,
   })
 
+  const [searchTerm, setSearchTerm] = useState('')
+
   const resetForm = () => {
     setForm({
       date: '',
@@ -94,14 +96,21 @@ function TrainingsPage() {
     setOpenEdit(true)
   }
 
-  const rows = useMemo(
-    () =>
-      trainings.map((training, index) => ({
-        ...training,
-        id: training._links?.self?.href?.split('/').pop() ?? `${training.date}-${training.activity}-${index}`,
-      })),
-    [trainings]
-  )
+  const rows = useMemo(() => {
+    const mapped = trainings.map((training, index) => ({
+      ...training,
+      id: training._links?.self?.href?.split('/').pop() ?? `${training.date}-${training.activity}-${index}`,
+    }))
+
+    if (!searchTerm) return mapped
+
+    const term = searchTerm.toLowerCase()
+    return mapped.filter(r => {
+      const activity = (r.activity ?? '').toString().toLowerCase()
+      const customerName = `${r.customer?.firstname ?? ''} ${r.customer?.lastname ?? ''}`.toLowerCase()
+      return activity.includes(term) || customerName.includes(term)
+    })
+  }, [trainings, searchTerm])
 
   const columns: GridColDef[] = [
     {
@@ -195,6 +204,15 @@ function TrainingsPage() {
         </Box>
       ) : (
         <Box sx={{ flex: 1, width: '100%', minHeight: 0 }}>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 1 }}>
+              <TextField
+                placeholder="Hae harjoituksia (laji tai asiakas)"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                size="small"
+                sx={{ width: 320 }}
+              />
+            </Box>
           <DataGrid
             rows={rows}
             columns={columns}
