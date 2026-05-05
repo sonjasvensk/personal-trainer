@@ -204,7 +204,7 @@ function TrainingsPage() {
         </Box>
       ) : (
         <Box sx={{ flex: 1, width: '100%', minHeight: 0 }}>
-            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 1 }}>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
               <TextField
                 placeholder="Hae harjoituksia (laji tai asiakas)"
                 value={searchTerm}
@@ -212,6 +212,18 @@ function TrainingsPage() {
                 size="small"
                 sx={{ width: 320 }}
               />
+              <Button
+                variant="contained"
+                onClick={() => {
+                  resetForm()
+                  setOpenAdd(true)
+                }}
+              >
+                Lisää harjoitus
+              </Button>
+              <Button variant="outlined" color="error" disabled={Array.from(selectionModel.ids).length !== 1} onClick={() => setOpenDelete(true)}>
+                Poista valittu
+              </Button>
             </Box>
           <DataGrid
             rows={rows}
@@ -242,21 +254,6 @@ function TrainingsPage() {
           />
         </Box>
       )}
-
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        <Button
-          variant="contained"
-          onClick={() => {
-            resetForm()
-            setOpenAdd(true)
-          }}
-        >
-          Lisää harjoitus
-        </Button>
-        <Button variant="outlined" color="error" disabled={Array.from(selectionModel.ids).length !== 1} onClick={() => setOpenDelete(true)}>
-          Poista valittu
-        </Button>
-      </Box>
 
       {/* Add Dialog */}
       <Dialog open={openAdd} onClose={() => setOpenAdd(false)} fullWidth>
